@@ -44,7 +44,27 @@ class UserService {
         try{
             return bcrypt.compareSync(userInputPassword, encryptedPassword);
         } catch (error) {
-            console.log("{Password could not be verified}", error);
+            console.log("Password could not be verified", error);
+            throw error;
+        }
+    }
+
+    async signIn(email, plainPassword) {
+        try{
+            // Step 1: fetch the user using email from database
+            const user = await this.userRepository.getByEmail(email);
+            // Step 2: compare incoming plain password with encrypted password in database
+            const passwordMatch = this.checkPassword(plainPassword, user.password);
+            if(!passwordMatch){
+                console.log("Password doesn't match");
+                throw {error: "Incorrect password"};
+            }
+            // Step 3: if passwords match, create a token and send it to the user
+            const newJWT = this.createToken({email: user.email, id: user.id});
+            return newJWT;
+
+        } catch (error) {
+            console.log("Something went wrong in signing in", error);
             throw error;
         }
     }
