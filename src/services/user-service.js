@@ -49,6 +49,23 @@ class UserService {
         }
     }
 
+    async isAuthenticated(token) {
+        try {
+            const response = this.verifyToken(token);
+            if(!response) {
+                throw {error: "Invalid token"}
+            }
+            const user = await this.userRepository.getById(response.id);
+            if(!user) {
+                throw {error: "No user found for this token"};
+            }
+            return user.id;
+        } catch (error) {
+            console.log("Something went wrong validating the token", error);
+            throw error;
+        }
+    }
+
     async signIn(email, plainPassword) {
         try{
             // Step 1: fetch the user using email from database
