@@ -85,6 +85,15 @@ class UserService {
             throw error;
         }
     }
+
+    isAdmin(userId) {
+        try {
+            this.userRepository.isAdmin(user);
+        } catch (error) {
+            console.log("Something went wrong validating user role", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = UserService;
